@@ -49,6 +49,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 # set output path for tests
 set(TEST_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/test)
 
+
 option(BUILD_C_BINDINGS "Build C bindings" ON)
 option(BUILD_PYTHON_BINDINGS "Build Python bindings" ON)
 option(BUILD_MATLAB_BINDINGS "Build Matlab bindings" ON)
@@ -58,6 +59,10 @@ option(BUILD_TESTS "Build tests" ON)
 option(BUILD_DOC "Build documentation" ON)
 option(USE_OPENMP "Use OpenMP multi-threading" ON)
 option(USE_MPI "Use MPI" OFF)
+
+#
+option(BUILD_SHARED_LIBS "Should I build the shared libraries?" ON)
+option(BUILD_STATIC_LIBS "Should I build the static libraries?" OFF)
 
 set(NVCC_COMPILER_BINDIR "" CACHE PATH  "Directory where nvcc should look for C++ compiler. This is passed to nvcc through the --compiler-bindir option.")
 
