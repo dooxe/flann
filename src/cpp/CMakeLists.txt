@@ -1,3 +1,17 @@
+include(CheckCXXCompilerFlag)
+
+check_cxx_compiler_flag(--push-state supported)
+if(NOT supported)
+    MESSAGE(STATUS "Removing flag '--push-state': not supported by '${CMAKE_CXX_COMPILER}'")
+endif()
+
+SET(WL_PUSH_STATE "-Wl,--push-state,--no-as-needed")
+SET(WL_PUSH_STATE "")
+
+SET(WL_POP_STATE "-Wl,--pop-state")
+SET(WL_POP_STATE "")
+
+
 #include_directories(${CMAKE_SOURCE_DIR}/include algorithms ext util nn .)
 
 add_definitions(-D_FLANN_VERSION=${FLANN_VERSION})
@@ -43,7 +57,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_COMPILER_IS_GNUCC)
     endif()
 else()
     add_library(flann_cpp SHARED ${CPP_SOURCES})
-    target_link_libraries(flann_cpp -Wl,--push-state,--no-as-needed ${LZ4_LIBRARIES} -Wl,--pop-state)
+    target_link_libraries(flann_cpp ${WL_PUSH_STATE} ${LZ4_LIBRARIES} ${WL_POP_STATE})
     # export lz4 headers, so that MSVC to creates flann_cpp.lib
     set_target_properties(flann_cpp PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS YES)
     if (BUILD_CUDA_LIB)
@@ -81,7 +95,7 @@ endif()
 
 if (BUILD_C_BINDINGS)
     add_library(flann_s STATIC ${C_SOURCES})
-    target_link_libraries(flann_cpp -Wl,--push-state,--no-as-needed ${LZ4_LIBRARIES} -Wl,--pop-state)
+    target_link_libraries(flann_cpp ${WL_PUSH_STATE} ${LZ4_LIBRARIES} ${WL_POP_STATE})
     if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_CLANG)
         set_target_properties(flann_s PROPERTIES COMPILE_FLAGS -fPIC)
     endif()
@@ -93,7 +107,10 @@ if (BUILD_C_BINDINGS)
         target_link_libraries(flann -Wl,-whole-archive flann_s -Wl,-no-whole-archive)
     else()
         add_library(flann SHARED ${C_SOURCES})
-        target_link_libraries(flann_cpp -Wl,--push-state,--no-as-needed ${LZ4_LIBRARIES} -Wl,--pop-state)
+
+        
+        
+        target_link_libraries(flann_cpp ${WL_PUSH_STATE} ${LZ4_LIBRARIES} ${WL_POP_STATE})
 
         if(MINGW AND OPENMP_FOUND)
           target_link_libraries(flann gomp)
