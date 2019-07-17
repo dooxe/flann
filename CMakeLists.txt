@@ -49,6 +49,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 # set output path for tests
 set(TEST_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/test)
 
+
 option(BUILD_C_BINDINGS "Build C bindings" ON)
 option(BUILD_PYTHON_BINDINGS "Build Python bindings" ON)
 option(BUILD_MATLAB_BINDINGS "Build Matlab bindings" ON)
@@ -58,6 +59,10 @@ option(BUILD_TESTS "Build tests" ON)
 option(BUILD_DOC "Build documentation" ON)
 option(USE_OPENMP "Use OpenMP multi-threading" ON)
 option(USE_MPI "Use MPI" OFF)
+
+#
+option(BUILD_SHARED_LIBS "Should I build the shared libraries?" ON)
+option(BUILD_STATIC_LIBS "Should I build the static libraries?" OFF)
 
 set(NVCC_COMPILER_BINDIR "" CACHE PATH  "Directory where nvcc should look for C++ compiler. This is passed to nvcc through the --compiler-bindir option.")
 
@@ -146,8 +151,20 @@ if (BUILD_CUDA_LIB)
     endif(CUDA_FOUND)
 endif(BUILD_CUDA_LIB)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LZ4 REQUIRED liblz4)
+if(NOT LZ4_INCLUDE_DIR)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(LZ4 REQUIRED liblz4)
+    SET(LZ4_INCLUDE_DIR ${LZ4_INCLUDE_DIRS})
+endif()
+
+if(NOT LZ4_INCLUDE_DIR)
+    MESSAGE(ERROR "Please specify LZ4_INCLUDE_DIR")
+    return()
+endif()
+
+include_directories(${LZ4_INCLUDE_DIR})
+link_directories(${LZ4_LIBRARY_DIR})
+
 
 #set the C/C++ include path to the "include" directory
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/src/cpp)
